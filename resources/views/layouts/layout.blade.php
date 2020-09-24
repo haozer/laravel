@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Pizzas</title>
+        <title>Laravel</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -21,16 +21,6 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="flex-center position-ref full-height">
-            <div class="content">
-                <div class="title m-b-md">
-                    <h1>Pizzas List</h1>
-                    @foreach($pizzas as $pizza)
-                        <p>{{ $loop->index }} - {{ $pizza['type'] }} - {{ $pizza['base'] }}</p>
-                    @endforeach
-
-                </div>
-            </div>
-        </div>
+        
     </body>
 </html>
