@@ -3,25 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pizza;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PizzaController extends Controller
 {
     //
     public function index() {
-        $name = request('name');
-
         // get data from database
-        $pizzas = [
+        $pizzas = Pizza::all();
+        //$pizzas = Pizza::latest()->get();
+        //$pizzas = Pizza::orderBy('price', 'desc')->get();
+        //$pizzas = Pizza::where('type', 'hawaiian')->get();
+
+        /*$pizzas = [
             ['type' => 'hawaiian', 
             'base' => 'cheesy crust',],
-            ['type' => 'volcano', 
-            'base' => 'garlic crust',],
-            ['type' => 'veg supreme', 
-            'base' => 'thin & crispy',],
             ['type' => 'Hao\'s special', 
             'base' => $name,],
-        ];
-        return view('pizzas', [
+        ];*/
+        $name = request('name');
+
+        return view('pizzas.index', [
             'pizzas' => $pizzas,
             'name' => $name,
             'age' => request('age'),
@@ -29,6 +32,35 @@ class PizzaController extends Controller
     }
 
     public function show($id) {
-        return view('details', ['id' => $id]);
+        if (is_numeric($id)) {
+            try {
+                $pizza = Pizza::findOrFail($id);
+            } catch (ModelNotFoundException $exception) {
+                return redirect('/pizzas');
+            }
+        } else {
+            $pizza = Pizza::where('name', 'LIKE', '%'.$id.'%')->first();
+        }
+        return view('pizzas.show', ['pizza' => $pizza, 'id' => $id]);
+    }
+
+    public function create() {
+        return view('pizzas.create');
+    }
+
+    public function store() {
+        // save to DB
+        $pizza = new Pizza();
+        $pizza->name = request('name');
+        $pizza->type = request('type');
+        $pizza->base = request('base');
+        $pizza->price = "£".number_format(rand(300, 500)/100, 2);
+        $pizza->toppings = request('toppings');
+        
+        //print_r(request('toppings'));
+        error_log("Saving: " . $pizza);
+        $pizza->save();
+        
+        return redirect('/pizzas')->with(['msg' => 'Success - Thanks for your order']);
     }
 }
