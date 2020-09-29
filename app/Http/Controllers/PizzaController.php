@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PizzaController extends Controller
 {
-    //
+    /*
+    public function __construct() {
+        $this->middleware('auth');
+    }
+    */
+    
     public function index() {
         // get data from database
         $pizzas = Pizza::all();
@@ -57,10 +62,23 @@ class PizzaController extends Controller
         $pizza->price = "£".number_format(rand(300, 500)/100, 2);
         $pizza->toppings = request('toppings');
         
-        //print_r(request('toppings'));
         error_log("Saving: " . $pizza);
         $pizza->save();
         
-        return redirect('/pizzas')->with(['msg' => 'Success - Thanks for your order']);
+        return redirect('/pizzas')->with(['msg' => 'Order created successfully']);
+    }
+
+    public function destroy($id) {
+        // delete from DB
+        try {
+            $pizza = Pizza::findOrFail($id);
+
+            error_log("Deleting: " . $id);
+            $pizza->delete();
+
+            return redirect('/pizzas')->with(['msg' => 'Deleted order number: '.$id]);
+        } catch (ModelNotFoundException $exception) {
+            return redirect('/pizzas')->with(['msg' => 'Could not find order number: '.$id]);
+        }
     }
 }
